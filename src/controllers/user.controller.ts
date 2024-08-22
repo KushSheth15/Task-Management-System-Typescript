@@ -11,10 +11,10 @@ import { generateAccessToken } from '../utils/jwt-tokens';
 import { generateRefreshToken } from '../utils/jwt-tokens';
 import encryption from '../utils/encryption';
 
-interface MyUserRequest extends Request{
+export interface MyUserRequest extends Request{
     token?: string;
     user?: User;
-  }
+}
 
 export const registerUser = asyncHandler(async (req:Request,res:Response,next:NextFunction)=>{
     const {userName,email,password} = req.body;

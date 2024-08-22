@@ -1,4 +1,4 @@
-import Sequelize,{CreationOptional,Model } from 'sequelize';
+import Sequelize, { CreationOptional, Model } from 'sequelize';
 import db from '../sequelize-client';
 
 export type TaskStatus = 'TODO' | 'INPROGRESS' | 'INREVIEW' | 'COMPLETED';
@@ -46,7 +46,7 @@ export const status = (sequelize: Sequelize.Sequelize, DataTypes: typeof Sequeli
 
   // Define associations (if any)
   Status.associate = models => {
-    // Define any associations if needed
+    Status.hasMany(models.Task, { foreignKey: 'statusId' });
   };
 
   return Status;

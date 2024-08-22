@@ -70,6 +70,8 @@ export const task = (sequelize: Sequelize.Sequelize, DataTypes: typeof Sequelize
   );
 
   Task.associate = (models) => {
+    Task.belongsTo(models.Status, { foreignKey: 'statusId' });
+    Task.belongsTo(models.User, { foreignKey: 'userId' });
   };
 
   return Task;

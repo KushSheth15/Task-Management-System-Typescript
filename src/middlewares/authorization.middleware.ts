@@ -17,7 +17,6 @@ export const authorizeRole = (allowedRoles:string[])=>{
         if(!allowedRoles.includes(user.role)){
             return next(new ApiError(403, 'Forbidden - User does not have the required role'));
         }
-
         next();
     };
 };
