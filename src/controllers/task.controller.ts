@@ -152,4 +152,44 @@ export const deleteTask = asyncHandler(async (req:MyUserRequest,res:Response,nex
         console.error(error);
         return next(new ApiError(500,"Internal Server Error",[error]));
     }
+});
+
+export const shareTask = asyncHandler(async (req:MyUserRequest,res:Response,next:NextFunction) => {
+    const {taskId,userId} = req.body;
+    const user = req.user;
+
+    if(!user){
+        throw new ApiError(401,'Unauthorized - User not found.');
+    }
+
+    try {
+        const task = await db.Task.findByPk(taskId);
+        if(!task){
+            throw new ApiError(404,"Task not found.");
+        }
+
+        const targetUser = await db.User.findByPk(userId);
+        if(!targetUser){
+            throw new ApiError(404,"User to share with not found.");
+        }
+
+        const existingShare = await db.TaskShare.findOne({
+            where: { taskId, userId }
+        });
+        if (existingShare) {
+            return next(new ApiError(400, 'Task is already shared with this user.'));
+        }
+
+        const taskShare = await db.TaskShare.create({
+            taskId,
+            userId
+        });
+
+        const response = new ApiResponse(201, taskShare, 'Task shared successfully');
+        res.status(201).json(response);
+    } catch (error) {
+        console.error(error);
+        return next(new ApiError(500, 'Internal Server Error', [error]));
+    }
+
 })
