@@ -10,6 +10,7 @@ import { Op } from 'sequelize';
 import { generateAccessToken } from '../utils/jwt-tokens';
 import { generateRefreshToken } from '../utils/jwt-tokens';
 import encryption from '../utils/encryption';
+import {ERROR_MESSAGES,SUCCESS_MESSAGES} from "../constants/messages.constant";
 
 export interface MyUserRequest extends Request{
     token?: string;
@@ -20,7 +21,7 @@ export const registerUser = asyncHandler(async (req:Request,res:Response,next:Ne
     const {userName,email,password} = req.body;
 
     if(!userName || !email || !password){
-        return next(new ApiError(400,"All Fields are required"));
+        return next(new ApiError(400,ERROR_MESSAGES.ALL_FIELDS_REQUIRED));
     }
 
     try {
@@ -32,7 +33,7 @@ export const registerUser = asyncHandler(async (req:Request,res:Response,next:Ne
         });
 
         if (existingUser) {
-            return next(new ApiError(400, "Email or Username already exists"));
+            return next(new ApiError(400, ERROR_MESSAGES.EMAIL_OR_USERNAME_EXISTS));
         }
 
         const newUser = await db.User.create({
@@ -41,11 +42,11 @@ export const registerUser = asyncHandler(async (req:Request,res:Response,next:Ne
             password
         });
 
-        const response = new ApiResponse(201,newUser,"User Registered successfully");
+        const response = new ApiResponse(201,newUser,SUCCESS_MESSAGES.USER_REGISTERED_SUCCESSFULLY);
         res.status(201).json(response);
     } catch (error) {
         console.error(error);
-        return next(new ApiError(500,"Internal Server Error",[error]));
+        return next(new ApiError(500,ERROR_MESSAGES.INTERNAL_SERVER_ERROR,[error]));
     }
 });
 
@@ -53,21 +54,45 @@ export const loginUser = asyncHandler(async (req:Request,res:Response,next:NextF
     const {email,password} = req.body;
 
     if(!email ||!password){
-        return next(new ApiError(400,"Email and Password are required"));
+        return next(new ApiError(400,ERROR_MESSAGES.EMAIL_AND_PASSWORD_REQUIRED));
     };
 
     try {
         const user = await db.User.findOne({where:{email}});
         if(!user){
-            return next(new ApiError(404,"User not found"));
+            return next(new ApiError(404,ERROR_MESSAGES.USER_NOT_FOUND));
         }
 
         const isMatch = await bcrypt.compare(password,user.password);
         if(!isMatch){
-            return next(new ApiError(401,"Invalid Credentials"));
+            return next(new ApiError(401,ERROR_MESSAGES.INVALID_CREDENTIALS));
         };
 
         const accessToken = generateAccessToken({userId:user.id,email:user.email});
+        const encryptedAccessToken = encryption.encryptWithAES(accessToken);
+
+        const existingAccessToken = await db.AccessToken.findOne({
+            where: {
+                userId: user.id,
+                tokenType: 'ACCESS'
+            }
+        });
+
+        if (existingAccessToken) {
+            // If an old access token exists, delete it
+            await db.AccessToken.destroy({
+                where: {
+                    id: existingAccessToken.id
+                }
+            });
+        }
+
+        await db.AccessToken.create({
+            tokenType:'ACCESS',
+            token: encryptedAccessToken,
+            userId: user.id,
+            expiredAt: new Date(Date.now() + 60 * 60 * 1000), 
+        });
 
         let refreshTokenRecord = await db.AccessToken.findOne({
             where:{
@@ -91,33 +116,24 @@ export const loginUser = asyncHandler(async (req:Request,res:Response,next:NextF
         }else{
             refreshToken = encryption.decryptWithAES(refreshTokenRecord.token);
         }
-        
-        const encryptedAccessToken = encryption.encryptWithAES(accessToken);
-        
-        await db.AccessToken.create({
-            tokenType:'ACCESS',
-            token: encryptedAccessToken,
-            userId: user.id,
-            expiredAt: new Date(Date.now() + 60 * 60 * 1000), 
-        });
 
         const response = new ApiResponse(201,{
             accessToken,
             refreshToken,
             user,
-        },"User Login Sucessfully");
+        },SUCCESS_MESSAGES.USER_LOGIN_SUCCESSFULLY);
 
         res.status(200).json(response);
     } catch (error) {
         console.error(error);
-        return next(new ApiError(500,"Internal Server Error",[error]));
+        return next(new ApiError(500,ERROR_MESSAGES.INTERNAL_SERVER_ERROR,[error]));
     }
 });
 
 export const logoutUser = asyncHandler(async (req:MyUserRequest,res:Response,next:NextFunction)=>{
     const token = req.token;
     if(!token){
-        return next(new ApiError(401,"Unauthorized-Token not found"));
+        return next(new ApiError(401,ERROR_MESSAGES.UNAUTHORIZED_TOKEN_NOT_FOUND));
     }
 
     try {
@@ -126,17 +142,17 @@ export const logoutUser = asyncHandler(async (req:MyUserRequest,res:Response,nex
         });
 
         if(deletedToken===0){
-            return next(new ApiError(404,"Token not found"));
+            return next(new ApiError(404,ERROR_MESSAGES.TOKEN_NOT_FOUND));
         }
 
         await db.AccessToken.destroy({
             where:{userId:req.user?.id,tokenType:'REFRESH'}
         });
 
-        const response = new ApiResponse(200,null,"User Logout Successfully");
+        const response = new ApiResponse(200,null,SUCCESS_MESSAGES.USER_LOGOUT_SUCCESSFULLY);
         res.status(200).json(response);
     } catch (error) {
         console.error(error);
-        return next(new ApiError(500,"Internal Server Error",[error]));
+        return next(new ApiError(500,ERROR_MESSAGES.INTERNAL_SERVER_ERROR,[error]));
     }
 })

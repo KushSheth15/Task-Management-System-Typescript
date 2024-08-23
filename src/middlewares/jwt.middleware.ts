@@ -8,6 +8,7 @@ import ApiError from '../utils/api-error';
 import asyncHandler from '../utils/async-handler';
 import User from '../models/user.model';
 import encryption from '../utils/encryption';
+import {ERROR_MESSAGES,SUCCESS_MESSAGES} from "../constants/messages.constant";
 
 interface MyUserRequest extends Request {
     token?: string;
@@ -18,7 +19,7 @@ export const verifyToken = asyncHandler(async (req: MyUserRequest, res: Response
     const token = req.headers.authorization?.split(' ')[1];
 
     if (!token) {
-        return next(new ApiError(401, 'Unauthorized - Token not provided.'));
+        return next(new ApiError(401, ERROR_MESSAGES.UNAUTHORIZED_TOKEN_NOT_FOUND));
     }
 
     try {
@@ -32,14 +33,13 @@ export const verifyToken = asyncHandler(async (req: MyUserRequest, res: Response
         });
 
         if (!encryptedToken) {
-            console.log('Token not found or expired');
-            return next(new ApiError(401, 'Unauthorized - Token not found or expired'));
+            return next(new ApiError(401, ERROR_MESSAGES.TOKEN_NOT_FOUND_OR_EXPIRED));
         }
 
         const decryptedToken = encryption.decryptWithAES(encryptedToken.token);
 
         if (decryptedToken !== token) {
-            return next(new ApiError(401, 'Unauthorized - Token mismatch'));
+            return next(new ApiError(401, ERROR_MESSAGES.TOKEN_MISMATCH));
         }
 
         const user = await db.User.findOne({
@@ -47,7 +47,7 @@ export const verifyToken = asyncHandler(async (req: MyUserRequest, res: Response
         });
 
         if (!user) {
-            return next(new ApiError(401, 'Unauthorized - User not found'));
+            return next(new ApiError(401, ERROR_MESSAGES.UNAUTHORIZED_USER));
         }
 
         req.token = token;
@@ -55,6 +55,6 @@ export const verifyToken = asyncHandler(async (req: MyUserRequest, res: Response
         next();
     } catch (error) {
         console.log(error);
-        return next(new ApiError(401, 'Unauthorized - Invalid token'));
+        return next(new ApiError(401, ERROR_MESSAGES.INVALID_TOKEN));
     }
 })

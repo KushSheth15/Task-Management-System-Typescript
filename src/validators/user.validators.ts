@@ -1,34 +1,35 @@
-import Joi from "joi";
+import Joi from 'joi';
+import { VALIDATION_MESSAGES } from '../constants/validation.constant';
 
 export const registerSchema = Joi.object({
-    userName:Joi.string().required().messages({
-        'string.empty': 'Username is required',
-        'any.required': 'Username is required'
+    userName: Joi.string().required().messages({
+        'string.empty': VALIDATION_MESSAGES.USERNAME_REQUIRED,
+        'any.required': VALIDATION_MESSAGES.USERNAME_REQUIRED
     }),
 
-    email:Joi.string().email().required().messages({
-        'string.email': 'Please provide a valid email address',
-        'string.empty': 'Email is required',
-        'any.required': 'Email is required'
+    email: Joi.string().email().required().messages({
+        'string.email': VALIDATION_MESSAGES.EMAIL_INVALID,
+        'string.empty': VALIDATION_MESSAGES.EMAIL_REQUIRED,
+        'any.required': VALIDATION_MESSAGES.EMAIL_REQUIRED
     }),
 
     password: Joi.string().min(8).required().messages({
-        'string.min': 'Password must be at least 8 characters long',
-        'string.empty': 'Password is required',
-        'any.required': 'Password is required'
+        'string.min': VALIDATION_MESSAGES.PASSWORD_MIN_LENGTH,
+        'string.empty': VALIDATION_MESSAGES.PASSWORD_REQUIRED,
+        'any.required': VALIDATION_MESSAGES.PASSWORD_REQUIRED
     })
 });
 
 export const loginSchema = Joi.object({
     email: Joi.string().email().required().messages({
-        'string.email': 'Please provide a valid email address',
-        'string.empty': 'Email is required',
-        'any.required': 'Email is required'
+        'string.email': VALIDATION_MESSAGES.EMAIL_INVALID,
+        'string.empty': VALIDATION_MESSAGES.EMAIL_REQUIRED,
+        'any.required': VALIDATION_MESSAGES.EMAIL_REQUIRED
     }),
 
     password: Joi.string().min(8).required().messages({
-        'string.min': 'Password must be at least 8 characters long',
-        'string.empty': 'Password is required',
-        'any.required': 'Password is required'
+        'string.min': VALIDATION_MESSAGES.PASSWORD_MIN_LENGTH,
+        'string.empty': VALIDATION_MESSAGES.PASSWORD_REQUIRED,
+        'any.required': VALIDATION_MESSAGES.PASSWORD_REQUIRED
     })
 });
