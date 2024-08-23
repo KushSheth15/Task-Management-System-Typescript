@@ -20,6 +20,12 @@ export const ERROR_MESSAGES = {
     TOKEN_NOT_FOUND_OR_EXPIRED: 'Unauthorized - Token not found or expired',
     TOKEN_MISMATCH: 'Unauthorized - Token mismatch',
     INVALID_TOKEN: 'Unauthorized - Invalid token',
+
+    NO_TASK_PROVIDED: "No tasks provided.",
+    MISSING_TASK_ID_OR_USER_ID: "Missing taskId or userId in one or more assignments.",
+    INVALID_TASK_ID_FORMAT: "Invalid task ID format.",
+    NO_TASKS_FOUND_TO_DELETE: "No tasks found to delete.",
+    NO_TASK_ASSIGNMENTS_PROVIDED:"No task assignments provided"
 };
 
 export const SUCCESS_MESSAGES = {
@@ -33,6 +39,7 @@ export const SUCCESS_MESSAGES = {
     TASK_SHARED_SUCCESSFULLY: 'Task shared successfully',
     TASK_MOVED_SUCCESSFULLY: 'Task Moved successfully',
     TASKS_RETRIEVED_SUCCESSFULLY: 'Tasks Retrieved Successfully',
+    TASKS_ASSIGNED_SUCCESSFULLY: "Tasks assigned successfully.",
 
     SUBTASK_CREATED: 'Subtask created successfully',
     TASK_STATUS_UPDATED: 'Task status updated successfully',

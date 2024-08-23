@@ -13,6 +13,10 @@ export const TASK_ROUTES = {
     SHARE_TASK: '/shared-task',
     MOVE_TASK: '/move-task/:id',
     GET_LIST_GROUPED: '/get-list/grouped',
+    FILTER_TASK:'/tasks',
+    CREATE_BULK_TASK:'/bulk-create',
+    ASSIGN_BULK_TASK:'/bulk-assign',
+    DELETE_BULK_TASK:'/bulk-delete'
 };
 
 export const SUBTASK_ROUTES = {

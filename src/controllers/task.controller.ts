@@ -6,6 +6,7 @@ import asyncHandler from '../utils/async-handler';
 import db from '../sequelize-client';
 import {ERROR_MESSAGES,SUCCESS_MESSAGES} from "../constants/messages.constant";
 import { MyUserRequest } from './user.controller';
+import { Op } from 'sequelize';
 
 
 export const createTask = asyncHandler(async (req:MyUserRequest,res:Response,next:NextFunction)=>{
@@ -193,15 +194,28 @@ export const shareTask = asyncHandler(async (req:MyUserRequest,res:Response,next
     }
 });
 
-export const moveTask = asyncHandler(async (req:Request,res:Response,next:NextFunction)=>{
+export const moveTask = asyncHandler(async (req:MyUserRequest,res:Response,next:NextFunction)=>{
     const taskId = req.params.id;
     const {statusId} = req.body;
+    const user = req.user;
+
+    if (!user) {
+        throw new ApiError(401, ERROR_MESSAGES.UNAUTHORIZED_USER);
+    }
 
     try {
         const task = await db.Task.findByPk(taskId);
         if(!task) {
             throw new ApiError(404, ERROR_MESSAGES.TASK_NOT_FOUND);
         };
+
+        const taskAssignment = await db.TaskShare.findOne({
+            where: { taskId, userId: user.id }
+        });
+
+        if (user.role !== 'ADMIN' && !taskAssignment) {
+            throw new ApiError(403, 'Forbidden - User does not have the required role');
+        }
 
         const status = await db.Status.findByPk(statusId);
         if(!status) {
@@ -241,5 +255,145 @@ export const getTaskByStatus = asyncHandler(async (req:Request,res:Response,next
     } catch (error) {
         console.error(error);
         return next(new ApiError(500,ERROR_MESSAGES.INTERNAL_SERVER_ERROR,[error]));
+    }
+});
+
+export const getFilteredTasks = asyncHandler(async (req:Request,res:Response,next:NextFunction)=>{
+    try {
+        const {statusId,dueDate,assigneeId,shared,page=1,limit=4,sortBy='createdAt',order="DESC"} = req.query;
+
+        const whereCondition:any = {};
+        if(statusId){
+            whereCondition.statusId = statusId;
+        }
+
+        if(dueDate){
+            whereCondition.dueDate = {[Op.lte]:new Date(dueDate as string)}
+        };
+
+        if(assigneeId){
+            whereCondition.userId = assigneeId;
+        }
+
+        if(shared){
+            const sharedUserId = shared as string; 
+
+            const sharedTasks  = await db.TaskShare.findAll({
+                attributes:['taskId'],
+                where:{
+                    userId:sharedUserId
+                }
+            });
+            whereCondition.id = {
+                [Op.in]:sharedTasks.map((task:any)=>task.taskId)
+            };
+        }
+
+        const offset = (parseInt(page as string,10)-1)*parseInt(limit as string,10);
+        const limitValue = parseInt(limit as string,10);
+
+        const tasks = await db.Task.findAndCountAll({
+            where: whereCondition,
+            order:[[sortBy as string,order as string]],
+            offset:offset,
+            limit:limitValue
+        });
+
+        res.json({
+            tasks:tasks.rows,
+            totalPages:Math.ceil(tasks.count / limitValue),
+            currentPage:parseInt(page as string,10),
+            totalTasks:tasks.count
+        });
+
+    } catch (error) {
+        console.error(error);
+        return next(new ApiError(500,ERROR_MESSAGES.INTERNAL_SERVER_ERROR,[error]));
+    }
+});
+
+
+export const bulkCreateTasks = asyncHandler(async (req:MyUserRequest,res:Response,next:NextFunction)=>{
+
+    const user = req.user;
+
+    if (!user) {
+        return next(new ApiError(401, ERROR_MESSAGES.UNAUTHORIZED_USER));
+    }
+
+    try {
+        const tasks = req.body.tasks;
+
+        if(!Array.isArray(tasks) || tasks.length === 0){
+            return next(new ApiError(400,ERROR_MESSAGES.NO_TASK_PROVIDED));
+        }
+
+        const tasksWithUserId = tasks.map(task => ({
+            ...task,
+            userId: user.id
+        }));
+
+        const createdTasks = await db.Task.bulkCreate(tasksWithUserId,{returning:true});
+        res.json(new ApiResponse(201,createdTasks,SUCCESS_MESSAGES.TASK_CREATED_SUCCESSFULLY))
+    } catch (error) {
+        console.error(error);
+        return next(new ApiError(500,ERROR_MESSAGES.INTERNAL_SERVER_ERROR,[error]));
+    }
+});
+
+export const bulkAssignTask = asyncHandler(async (req:MyUserRequest,res:Response,next:NextFunction)=>{
+    const user = req.user;
+    if (!user) {
+        return next(new ApiError(401, ERROR_MESSAGES.UNAUTHORIZED_USER));
+    }
+
+    try {
+        const {taskAssignment} = req.body;
+        if(!Array.isArray(taskAssignment) || taskAssignment.length === 0){
+            return next(new ApiError(400, ERROR_MESSAGES.NO_TASK_ASSIGNMENTS_PROVIDED));
+        };
+
+        taskAssignment.forEach((assignment: any) => {
+            if (!assignment.taskId || !assignment.userId) {
+                throw new ApiError(400, ERROR_MESSAGES.MISSING_TASK_ID_OR_USER_ID);
+            }
+        });
+
+        await db.TaskShare.bulkCreate(taskAssignment,{returning:true});
+
+        res.status(200).json(new ApiResponse(200,null,SUCCESS_MESSAGES.TASKS_ASSIGNED_SUCCESSFULLY));
+
+    } catch (error) {
+        console.error(error);
+        return next(new ApiError(500,ERROR_MESSAGES.INTERNAL_SERVER_ERROR,[error]));
+    }
+});
+
+export const bulkDeleteTasks = asyncHandler(async (req:MyUserRequest,res:Response,next:NextFunction)=>{
+    const user = req.user;
+    if (!user) {
+        return next(new ApiError(401, ERROR_MESSAGES.UNAUTHORIZED_USER));
+    }
+
+    try {
+        const {taskIds} = req.body;
+        if(!Array.isArray(taskIds) || taskIds.length === 0){
+            return next(new ApiError(400,ERROR_MESSAGES.NO_TASK_PROVIDED));
+        }
+
+        const deletedTasks = await db.Task.destroy({
+            where: {
+                id: taskIds
+            }
+        });
+
+        if (deletedTasks === 0) {
+            return next(new ApiError(404,ERROR_MESSAGES.NO_TASKS_FOUND_TO_DELETE));
+        }
+
+        res.status(200).json(new ApiResponse(200, null, SUCCESS_MESSAGES.TASK_DELETED_SUCCESSFULLY));
+    } catch (error) {
+        console.error(error);
+        return next(new ApiError(500, ERROR_MESSAGES.INTERNAL_SERVER_ERROR, [error]));
     }
 })
