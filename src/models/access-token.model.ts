@@ -1,19 +1,28 @@
-import Sequelize,{CreationOptional, ForeignKey, Model } from 'sequelize';
-import db from '../sequelize-client'; 
-import User from './user.model'; 
+import Sequelize, { CreationOptional, ForeignKey, Model } from 'sequelize';
+
+import db from '../sequelize-client';
+
+import User from './user.model';
 
 export interface AccessTokenModelCreationAttributes {
-  tokenType: 'ACCESS' | 'REFRESH';
-  token: string;
-  userId: string;
-  expiredAt?: Date;
+    tokenType: 'ACCESS' | 'REFRESH';
+    token: string;
+    userId: string;
+    expiredAt?: Date;
 }
 
-export interface AccessTokenModelAttributes extends AccessTokenModelCreationAttributes {
-  id: string;
+export interface AccessTokenModelAttributes
+    extends AccessTokenModelCreationAttributes {
+    id: string;
 }
 
-export default class AccessToken extends Model<AccessTokenModelAttributes, AccessTokenModelCreationAttributes> implements AccessTokenModelAttributes {
+export default class AccessToken
+  extends Model<
+        AccessTokenModelAttributes,
+        AccessTokenModelCreationAttributes
+    >
+  implements AccessTokenModelAttributes
+{
   declare id: CreationOptional<string>;
   declare token: string;
   declare tokenType: 'ACCESS' | 'REFRESH';
@@ -25,7 +34,10 @@ export default class AccessToken extends Model<AccessTokenModelAttributes, Acces
 }
 
 // Initialize the AccessToken model
-export const accessToken = (sequelize: Sequelize.Sequelize, DataTypes: typeof Sequelize.DataTypes) => {
+export const accessToken = (
+  sequelize: Sequelize.Sequelize,
+  DataTypes: typeof Sequelize.DataTypes,
+) => {
   AccessToken.init(
     {
       id: {
@@ -44,7 +56,7 @@ export const accessToken = (sequelize: Sequelize.Sequelize, DataTypes: typeof Se
       userId: {
         type: DataTypes.UUID,
         allowNull: false,
-        field: 'user_id'
+        field: 'user_id',
       },
       expiredAt: {
         type: DataTypes.DATE,
@@ -63,15 +75,15 @@ export const accessToken = (sequelize: Sequelize.Sequelize, DataTypes: typeof Se
           fields: ['user_id', 'token'],
         },
       ],
-    }
+    },
   );
 
   // Define associations (if any)
   AccessToken.associate = models => {
-    // AccessToken.belongsTo(models.User, {
-    //   foreignKey: 'user_id',
-    //   targetKey: 'id',
-    // });
+    AccessToken.belongsTo(models.User, {
+      foreignKey: 'user_id',
+      targetKey: 'id',
+    });
   };
 
   return AccessToken;

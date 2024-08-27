@@ -3,7 +3,7 @@ import { Dialect } from 'sequelize';
 
 dotenv.config();
 
-const env: string = process.env.NODE_ENV || 'development' as string;
+const env: string = process.env.NODE_ENV || ('development' as string);
 const username: string = process.env.POSTGRES_USERNAME as string;
 const password: string = process.env.POSTGRES_PASSWORD as string;
 const database: string = process.env.POSTGRES_DATABASE as string;
@@ -31,4 +31,4 @@ const dbConfigs = {
   [env]: config,
 };
 
-export = dbConfigs
+export = dbConfigs;

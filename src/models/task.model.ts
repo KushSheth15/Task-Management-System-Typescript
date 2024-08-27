@@ -1,22 +1,27 @@
 import Sequelize, { CreationOptional, ForeignKey, Model } from 'sequelize';
+
 import db from '../sequelize-client';
+
 import TaskShare from './share-task.model';
-import Status  from './status.model';
+import Status from './status.model';
 import User from './user.model';
 
 export interface TaskModelCreationAttributes {
-  title: string;
-  description?: string;
-  statusId: string; 
-  userId: string; 
-  dueDate?: Date;
+    title: string;
+    description?: string;
+    statusId: string;
+    userId: string;
+    dueDate?: Date;
 }
 
 export interface TaskModelAttributes extends TaskModelCreationAttributes {
-  id: string;
+    id: string;
 }
 
-export default class Task extends Model<TaskModelAttributes, TaskModelCreationAttributes> implements TaskModelAttributes {
+export default class Task
+  extends Model<TaskModelAttributes, TaskModelCreationAttributes>
+  implements TaskModelAttributes
+{
   declare id: CreationOptional<string>;
   declare title: string;
   declare description?: string;
@@ -32,7 +37,10 @@ export default class Task extends Model<TaskModelAttributes, TaskModelCreationAt
 }
 
 // Initialize the Task model
-export const task = (sequelize: Sequelize.Sequelize, DataTypes: typeof Sequelize.DataTypes) => {
+export const task = (
+  sequelize: Sequelize.Sequelize,
+  DataTypes: typeof Sequelize.DataTypes,
+) => {
   Task.init(
     {
       id: {
@@ -70,13 +78,16 @@ export const task = (sequelize: Sequelize.Sequelize, DataTypes: typeof Sequelize
       modelName: 'Task',
       tableName: 'tasks',
       paranoid: true,
-    }
+    },
   );
 
-  Task.associate = (models) => {
+  Task.associate = models => {
     Task.belongsTo(models.Status, { foreignKey: 'statusId' });
-    Task.belongsTo(models.User, { foreignKey: 'userId',as:'user' });
-    Task.hasMany(models.TaskShare, { foreignKey: 'taskId', as: 'sharedUsers' });
+    Task.belongsTo(models.User, { foreignKey: 'userId', as: 'user' });
+    Task.hasMany(models.TaskShare, {
+      foreignKey: 'taskId',
+      as: 'sharedUsers',
+    });
   };
 
   return Task;

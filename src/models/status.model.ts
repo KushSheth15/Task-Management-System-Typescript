@@ -1,17 +1,21 @@
 import Sequelize, { CreationOptional, Model } from 'sequelize';
+
 import db from '../sequelize-client';
 
 export type TaskStatus = 'TODO' | 'INPROGRESS' | 'INREVIEW' | 'COMPLETED';
 
 export interface StatusModelCreationAttributes {
-  status: TaskStatus;
+    status: TaskStatus;
 }
 
 export interface StatusModelAttributes extends StatusModelCreationAttributes {
-  id: string;
+    id: string;
 }
 
-export default class Status extends Model<StatusModelAttributes, StatusModelCreationAttributes> implements StatusModelAttributes {
+export default class Status
+  extends Model<StatusModelAttributes, StatusModelCreationAttributes>
+  implements StatusModelAttributes
+{
   declare id: CreationOptional<string>;
   declare status: TaskStatus;
 
@@ -20,7 +24,10 @@ export default class Status extends Model<StatusModelAttributes, StatusModelCrea
 }
 
 // Initialize the Status model
-export const status = (sequelize: Sequelize.Sequelize, DataTypes: typeof Sequelize.DataTypes) => {
+export const status = (
+  sequelize: Sequelize.Sequelize,
+  DataTypes: typeof Sequelize.DataTypes,
+) => {
   Status.init(
     {
       id: {
@@ -29,7 +36,12 @@ export const status = (sequelize: Sequelize.Sequelize, DataTypes: typeof Sequeli
         defaultValue: DataTypes.UUIDV4,
       },
       status: {
-        type: DataTypes.ENUM('TODO', 'INPROGRESS', 'INREVIEW', 'COMPLETED'),
+        type: DataTypes.ENUM(
+          'TODO',
+          'INPROGRESS',
+          'INREVIEW',
+          'COMPLETED',
+        ),
         allowNull: false,
         defaultValue: 'TODO',
       },
@@ -41,7 +53,7 @@ export const status = (sequelize: Sequelize.Sequelize, DataTypes: typeof Sequeli
       modelName: 'Status',
       tableName: 'statuses',
       paranoid: true,
-    }
+    },
   );
 
   // Define associations (if any)

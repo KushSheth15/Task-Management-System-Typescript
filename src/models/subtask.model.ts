@@ -1,21 +1,26 @@
 import Sequelize, { CreationOptional, ForeignKey, Model } from 'sequelize';
+
 import db from '../sequelize-client';
-import Status  from './status.model';
+
+import Status from './status.model';
 import Task from './task.model';
 
 export interface SubTaskModelCreationAttributes {
-  title: string;
-  description?: string;
-  statusId: string; 
-  taskId:string;
-  dueDate?: Date;
+    title: string;
+    description?: string;
+    statusId: string;
+    taskId: string;
+    dueDate?: Date;
 }
 
 export interface SubTaskModelAttributes extends SubTaskModelCreationAttributes {
-  id: string;
+    id: string;
 }
 
-export default class SubTask extends Model<SubTaskModelAttributes, SubTaskModelCreationAttributes> implements SubTaskModelAttributes {
+export default class SubTask
+  extends Model<SubTaskModelAttributes, SubTaskModelCreationAttributes>
+  implements SubTaskModelAttributes
+{
   declare id: CreationOptional<string>;
   declare title: string;
   declare description?: string;
@@ -28,7 +33,10 @@ export default class SubTask extends Model<SubTaskModelAttributes, SubTaskModelC
 }
 
 // Initialize the Task model
-export const subtask = (sequelize: Sequelize.Sequelize, DataTypes: typeof Sequelize.DataTypes) => {
+export const subtask = (
+  sequelize: Sequelize.Sequelize,
+  DataTypes: typeof Sequelize.DataTypes,
+) => {
   SubTask.init(
     {
       id: {
@@ -66,11 +74,11 @@ export const subtask = (sequelize: Sequelize.Sequelize, DataTypes: typeof Sequel
       modelName: 'SubTask',
       tableName: 'subtasks',
       paranoid: true,
-    }
+    },
   );
 
-  SubTask.associate = (models) => {
-  };
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  SubTask.associate = models => {};
 
   return SubTask;
 };

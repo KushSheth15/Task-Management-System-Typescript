@@ -1,19 +1,28 @@
-import Sequelize, { CreationOptional, InferAttributes, InferCreationAttributes, Model } from "sequelize";
-import bcrypt from "bcrypt";
-import db from "../sequelize-client";
+import bcrypt from 'bcrypt';
+import Sequelize, {
+  CreationOptional,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+} from 'sequelize';
+
+import db from '../sequelize-client';
 
 export interface UserModelCreationAttributes {
-  email: string;
-  password: string;
-  userName?: string;
+    email: string;
+    password: string;
+    userName?: string;
 }
 
 export interface UserModelAttributes extends UserModelCreationAttributes {
-  id: string;
-  role: 'ADMIN' | 'USER'
+    id: string;
+    role: 'ADMIN' | 'USER';
 }
 
-export default class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
+export default class User extends Model<
+    InferAttributes<User>,
+    InferCreationAttributes<User>
+> {
   declare id: CreationOptional<string>;
   declare email: string;
   declare password: string;
@@ -30,32 +39,35 @@ export default class User extends Model<InferAttributes<User>, InferCreationAttr
   }
 }
 
-export const user = (sequelize: Sequelize.Sequelize, DataTypes: typeof Sequelize.DataTypes) => {
+export const user = (
+  sequelize: Sequelize.Sequelize,
+  DataTypes: typeof Sequelize.DataTypes,
+) => {
   User.init(
     {
       id: {
         type: DataTypes.UUID,
         primaryKey: true,
-        defaultValue: DataTypes.UUIDV4
+        defaultValue: DataTypes.UUIDV4,
       },
       email: {
         type: DataTypes.STRING,
         unique: true,
-        allowNull: false
+        allowNull: false,
       },
       password: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
       },
       userName: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
       },
       role: {
         type: DataTypes.ENUM('ADMIN', 'USER'),
         allowNull: false,
-        defaultValue: 'USER'
-      }
+        defaultValue: 'USER',
+      },
     },
     {
       sequelize,
@@ -67,13 +79,12 @@ export const user = (sequelize: Sequelize.Sequelize, DataTypes: typeof Sequelize
       hooks: {
         beforeCreate: User.hashPassword,
         beforeUpdate: User.hashPassword,
+      },
+    },
+  );
 
-      }
-    }
-  )
-
-  User.associate = (models) => {
-  };
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  User.associate = models => {};
 
   return User;
 };

@@ -1,9 +1,11 @@
-import { Router } from "express";
-import userRoutes from "./user.route";
-import taskRoutes from "./task.route";
+import { Router } from 'express';
+
+import { API_ROUTES } from '../constants/api.constant';
+
+import reminderRoutes from './reminder.route';
 import subtaskRoutes from './subtask.route';
-import reminderRoutes from "./reminder.route";
-import {API_ROUTES} from "../constants/api.constant"
+import taskRoutes from './task.route';
+import userRoutes from './user.route';
 
 const router = Router();
 
@@ -13,6 +15,6 @@ router.use(API_ROUTES.TASK, taskRoutes);
 
 router.use(API_ROUTES.SUBTASK, subtaskRoutes);
 
-router.use(API_ROUTES.REMINDER,reminderRoutes);
+router.use(API_ROUTES.REMINDER, reminderRoutes);
 
 export default router;
