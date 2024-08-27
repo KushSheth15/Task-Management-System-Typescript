@@ -9,6 +9,7 @@ export const ERROR_MESSAGES = {
   INTERNAL_SERVER_ERROR: 'Internal Server Error',
   UNAUTHORIZED_USER: 'Unauthorized - User not found.',
   INVALID_TASK_ID: 'Invalid Task ID',
+  SUBTASK_NOT_FOUND:'Subtask not found',
 
   TASK_NOT_FOUND: 'Task not found',
   INVALID_STATUS_ID: 'Invalid status ID',
@@ -50,6 +51,7 @@ export const SUCCESS_MESSAGES = {
   SUBTASK_CREATED: 'Subtask created successfully',
   TASK_STATUS_UPDATED: 'Task status updated successfully',
   TASK_DUE_DATE_UPDATED: 'Task due date updated successfully',
+  SUBTASKS_RETRIEVED_SUCCESSFULLY:'SubTask Retrived Successfully',
 
   REMINDER_CREATED: 'Reminder created successfully.',
   REMINDER_UPDATED: 'Reminder updated successfully.',

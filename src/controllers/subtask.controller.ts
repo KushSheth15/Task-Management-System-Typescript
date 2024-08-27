@@ -57,6 +57,42 @@ export const createSubTask = asyncHandler(
   },
 );
 
+export const getSubTask = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { subTaskId } = req.params;
+
+    try {
+      // Fetch the subtask by ID
+      const subTask = await db.SubTask.findByPk(subTaskId,{
+        include:[
+          {
+            model:db.Task,
+            as:'task',
+            attributes: ['title','dueDate'],
+          }
+          
+        ]
+      });
+
+      if (!subTask) {
+        throw new ApiError(404, ERROR_MESSAGES.SUBTASK_NOT_FOUND);
+      }
+
+      const response = new ApiResponse(
+        200,
+        subTask,
+        SUCCESS_MESSAGES.SUBTASKS_RETRIEVED_SUCCESSFULLY,
+      );
+      return res.status(200).json(response);
+    } catch (error) {
+      console.error(error);
+      return next(
+        new ApiError(500, ERROR_MESSAGES.INTERNAL_SERVER_ERROR, [error]),
+      );
+    }
+  },
+);
+
 export const updateTaskStatus = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const taskId = req.params.id;

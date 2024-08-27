@@ -5,6 +5,7 @@ import {
   createSubTask,
   updateTaskStatus,
   updateTaskDueDate,
+  getSubTask
 } from '../controllers/subtask.controller';
 import { authorizeRole } from '../middlewares/authorization.middleware';
 import { verifyToken } from '../middlewares/jwt.middleware';
@@ -31,5 +32,7 @@ router.put(
   authorizeRole(['ADMIN']),
   updateTaskDueDate,
 );
+
+router.get(SUBTASK_ROUTES.GET_SUBTASK,getSubTask);
 
 export default router;

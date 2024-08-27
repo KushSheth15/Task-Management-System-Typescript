@@ -77,8 +77,9 @@ export const subtask = (
     },
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  SubTask.associate = models => {};
+  SubTask.associate = models => {
+    SubTask.belongsTo(models.Task,{foreignKey:'taskId',as:'task'});
+  };
 
   return SubTask;
 };

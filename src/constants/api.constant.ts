@@ -23,6 +23,7 @@ export const SUBTASK_ROUTES = {
   CREATE_SUBTASK: '/create-subtask',
   UPDATE_STATUS: '/update-status/:id',
   UPDATE_DUE_DATE: '/update-due-date/:id',
+  GET_SUBTASK:'/subtasks/:subTaskId'
 };
 
 export const REMINDER_ROUTES = {

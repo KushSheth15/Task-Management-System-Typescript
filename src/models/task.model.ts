@@ -20,8 +20,7 @@ export interface TaskModelAttributes extends TaskModelCreationAttributes {
 
 export default class Task
   extends Model<TaskModelAttributes, TaskModelCreationAttributes>
-  implements TaskModelAttributes
-{
+  implements TaskModelAttributes {
   declare id: CreationOptional<string>;
   declare title: string;
   declare description?: string;
@@ -88,6 +87,7 @@ export const task = (
       foreignKey: 'taskId',
       as: 'sharedUsers',
     });
+    Task.hasMany(models.SubTask, { as: 'subtasks', foreignKey: 'taskId' });
   };
 
   return Task;

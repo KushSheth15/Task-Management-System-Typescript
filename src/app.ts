@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as dotenv from 'dotenv';
-import express, { Request, Response } from 'express';
+import express from 'express';
 
 dotenv.config();
 import { REST_API_PREFIX } from './constants/api.constant';
@@ -12,12 +13,8 @@ app.use(express.json());
 
 app.use(REST_API_PREFIX.API_V1, router);
 
-interface CustomError extends Error {
-  statusCode?: number;
-  code?: string;
-}
-
-app.use((err: CustomError, req: Request, res: Response) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+app.use((err: any, req: any, res: any, next: any) => {
   if (err.statusCode) {
     res.status(err.statusCode).json({
       message: err.message,
