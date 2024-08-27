@@ -1,5 +1,6 @@
 import Sequelize, { CreationOptional, ForeignKey, Model } from 'sequelize';
 import db from '../sequelize-client';
+import TaskShare from './share-task.model';
 import Status  from './status.model';
 import User from './user.model';
 
@@ -22,6 +23,9 @@ export default class Task extends Model<TaskModelAttributes, TaskModelCreationAt
   declare statusId: ForeignKey<Status['id']>;
   declare userId: ForeignKey<User['id']>;
   declare dueDate?: Date;
+
+  declare user?: User;
+  declare sharedUsers?: TaskShare[];
 
   // Static method for defining associations
   static associate: (models: typeof db) => void;
@@ -71,7 +75,8 @@ export const task = (sequelize: Sequelize.Sequelize, DataTypes: typeof Sequelize
 
   Task.associate = (models) => {
     Task.belongsTo(models.Status, { foreignKey: 'statusId' });
-    Task.belongsTo(models.User, { foreignKey: 'userId' });
+    Task.belongsTo(models.User, { foreignKey: 'userId',as:'user' });
+    Task.hasMany(models.TaskShare, { foreignKey: 'taskId', as: 'sharedUsers' });
   };
 
   return Task;

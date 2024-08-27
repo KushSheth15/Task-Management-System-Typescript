@@ -23,9 +23,11 @@ export const ERROR_MESSAGES = {
 
     NO_TASK_PROVIDED: "No tasks provided.",
     MISSING_TASK_ID_OR_USER_ID: "Missing taskId or userId in one or more assignments.",
-    INVALID_TASK_ID_FORMAT: "Invalid task ID format.",
+    INVALID_TASK_ID_FORMAT: "Invalid task ID.",
     NO_TASKS_FOUND_TO_DELETE: "No tasks found to delete.",
-    NO_TASK_ASSIGNMENTS_PROVIDED:"No task assignments provided"
+    NO_TASK_ASSIGNMENTS_PROVIDED:"No task assignments provided",
+
+    REMINDER_NOT_FOUND: 'Reminder not found.',
 };
 
 export const SUCCESS_MESSAGES = {
@@ -43,5 +45,8 @@ export const SUCCESS_MESSAGES = {
 
     SUBTASK_CREATED: 'Subtask created successfully',
     TASK_STATUS_UPDATED: 'Task status updated successfully',
-    TASK_DUE_DATE_UPDATED: 'Task due date updated successfully'
+    TASK_DUE_DATE_UPDATED: 'Task due date updated successfully',
+
+    REMINDER_CREATED: 'Reminder created successfully.',
+    REMINDER_UPDATED: 'Reminder updated successfully.',
 };

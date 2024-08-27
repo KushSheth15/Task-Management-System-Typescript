@@ -4,15 +4,17 @@ import Task from './task.model';
 import User from './user.model';
 
 export interface TaskShareAttributes {
- id?:string;
- taskId: string;
- userId: string;
+  id?: string;
+  taskId: string;
+  userId: string;
 }
 
-export default class TaskShare extends Model<TaskShareAttributes> implements TaskShareAttributes  {
+export default class TaskShare extends Model<TaskShareAttributes> implements TaskShareAttributes {
   declare id: CreationOptional<string>;
   declare taskId: ForeignKey<Task['id']>;
   declare userId: ForeignKey<User['id']>;
+
+  declare user?:User;
 
   // Static method for defining associations
   static associate: (models: typeof db) => void;
@@ -20,7 +22,7 @@ export default class TaskShare extends Model<TaskShareAttributes> implements Tas
 
 // Initialize the Task model
 export const taskShare = (sequelize: Sequelize.Sequelize, DataTypes: typeof Sequelize.DataTypes) => {
-    TaskShare.init(
+  TaskShare.init(
     {
       id: {
         type: DataTypes.UUID,
@@ -48,14 +50,10 @@ export const taskShare = (sequelize: Sequelize.Sequelize, DataTypes: typeof Sequ
     }
   );
 
-//   Task.associate = (models) => {
-//     Task.belongsTo(models.Status, { foreignKey: 'statusId' });
-//     Task.belongsTo(models.User, { foreignKey: 'userId' });
-//   };
-
-     TaskShare.associate = (models)=>{
-        
-     }
+  TaskShare.associate = (models) => {
+    TaskShare.belongsTo(models.Task, { foreignKey: 'taskId', as: 'task' });
+    TaskShare.belongsTo(models.User, { foreignKey: 'userId', as: 'user' });
+  };
 
   return TaskShare;
 };

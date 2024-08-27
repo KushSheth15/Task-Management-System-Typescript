@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express';
-import bcrypt from 'bcrypt';
 import ApiError from '../utils/api-error';
 import ApiResponse from '../utils/api-response';
 import asyncHandler from '../utils/async-handler';
@@ -50,7 +49,7 @@ export const getAllTasks = asyncHandler(async (req:MyUserRequest,res:Response,ne
             attributes:['title','description','dueDate'],
             include:[
                 {model:db.Status,attributes:['status']},
-                {model:db.User,attributes:['userName','email','role']}
+                {model:db.User,as:'user',attributes:['userName','email','role']}
             ]
         });
         if(getTask.length === 0){

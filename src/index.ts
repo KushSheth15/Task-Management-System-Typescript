@@ -3,8 +3,11 @@ dotenv.config();
 
 import app from './app';
 import db from './sequelize-client';
+import setupCronJobs from "./services/reminder.services";
 
 const PORT = process.env.PORT;
+
+setupCronJobs();
 
 const startServer = async ()=>{
     try {

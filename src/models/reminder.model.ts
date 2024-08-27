@@ -16,6 +16,7 @@ export default class Reminder  extends Model<ReminderModelAttributes , ReminderM
   declare taskId: ForeignKey<Task['id']>;
   declare reminderDate: Date;
   
+  declare task?: Task;
   static associate: (models: typeof db) => void;
 }
 
@@ -49,8 +50,8 @@ export const reminder  = (sequelize: Sequelize.Sequelize, DataTypes: typeof Sequ
   );
 
   // Define associations (if any)
-  Reminder .associate = models => {
-    // Define any associations if needed
+  Reminder.associate = models => {
+    Reminder.belongsTo(models.Task,{foreignKey:'taskId',as:'task'});
   };
 
   return Reminder ;

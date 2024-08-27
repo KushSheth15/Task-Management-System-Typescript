@@ -25,10 +25,16 @@ export const SUBTASK_ROUTES = {
     UPDATE_DUE_DATE: '/update-due-date/:id',
 };
 
+export const REMINDER_ROUTES = {
+    CREATE_REMINDER:'/create-reminder',
+    UPDATE_REMINDER:'/update-reminder/:id'
+};
+
 export const API_ROUTES = {
     USERS: '/users',
     TASK: '/task',
     SUBTASK: '/subtask',
+    REMINDER:'/reminder',
 };
 
 export const REST_API_PREFIX = {
