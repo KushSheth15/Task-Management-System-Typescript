@@ -12,6 +12,7 @@ import { generateRefreshToken } from '../utils/jwt-tokens';
 import encryption from '../utils/encryption';
 import {ERROR_MESSAGES,SUCCESS_MESSAGES} from "../constants/messages.constant";
 
+
 export interface MyUserRequest extends Request{
     token?: string;
     user?: User;
@@ -67,6 +68,7 @@ export const loginUser = asyncHandler(async (req:Request,res:Response,next:NextF
         if(!isMatch){
             return next(new ApiError(401,ERROR_MESSAGES.INVALID_CREDENTIALS));
         };
+
 
         const accessToken = generateAccessToken({userId:user.id,email:user.email});
         const encryptedAccessToken = encryption.encryptWithAES(accessToken);

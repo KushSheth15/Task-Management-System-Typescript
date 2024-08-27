@@ -8,6 +8,7 @@ export const ERROR_MESSAGES = {
     TOKEN_NOT_FOUND: "Token not found",
     INTERNAL_SERVER_ERROR: "Internal Server Error",
     UNAUTHORIZED_USER: 'Unauthorized - User not found.',
+    INVALID_TASK_ID:'Invalid Task ID',
 
     TASK_NOT_FOUND: 'Task not found',
     INVALID_STATUS_ID: 'Invalid status ID',
@@ -16,10 +17,12 @@ export const ERROR_MESSAGES = {
     TASK_ALREADY_SHARED: 'Task is already shared with this user.',
     NO_STATUSES_FOUND: 'No statuses found',
     FORBIDDEN_ROLE: 'Forbidden - User does not have the required role',
+    NO_SHARED_TASKS_FOUND:'No Shared Tasks Found',
 
     TOKEN_NOT_FOUND_OR_EXPIRED: 'Unauthorized - Token not found or expired',
     TOKEN_MISMATCH: 'Unauthorized - Token mismatch',
     INVALID_TOKEN: 'Unauthorized - Invalid token',
+    INVALID_REMINDER_DATE:"Invalid reminder date",
 
     NO_TASK_PROVIDED: "No tasks provided.",
     MISSING_TASK_ID_OR_USER_ID: "Missing taskId or userId in one or more assignments.",

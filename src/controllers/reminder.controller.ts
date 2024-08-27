@@ -14,6 +14,14 @@ export const createReminder = asyncHandler (async(req:MyUserRequest,res:Response
     if(!user){
         throw new ApiError(401,ERROR_MESSAGES.UNAUTHORIZED_USER);
     }
+
+    if (!taskId || isNaN(Number(taskId))) {
+        return next(new ApiError(400, ERROR_MESSAGES.INVALID_TASK_ID_FORMAT));
+    }
+
+    if (!reminderDate || isNaN(Date.parse(reminderDate))) {
+        return next(new ApiError(400, ERROR_MESSAGES.INVALID_REMINDER_DATE));
+    }
     
     try {
         const task = await db.Task.findByPk(taskId,{
@@ -77,6 +85,10 @@ export const updateReminder = asyncHandler(async (req: MyUserRequest, res: Respo
 
     if (!user) {
         return next(new ApiError(401, ERROR_MESSAGES.UNAUTHORIZED_USER));
+    }
+
+    if (reminderDate && isNaN(Date.parse(reminderDate))) {
+        return next(new ApiError(400, ERROR_MESSAGES.INVALID_REMINDER_DATE));
     }
 
     try {
