@@ -7,7 +7,7 @@ export const ERROR_MESSAGES = {
   UNAUTHORIZED_TOKEN_NOT_FOUND: 'Unauthorized - Token not found',
   TOKEN_NOT_FOUND: 'Token not found',
   INTERNAL_SERVER_ERROR: 'Internal Server Error',
-  UNAUTHORIZED_USER: 'Unauthorized - User not found.',
+  UNAUTHORIZED_USER: 'Unauthorized - User not found',
   INVALID_TASK_ID: 'Invalid Task ID',
   SUBTASK_NOT_FOUND:'Subtask not found',
 
